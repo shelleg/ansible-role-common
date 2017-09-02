@@ -1,0 +1,20 @@
+---
+# tasks file for common
+
+- name: "Include {{ ansible_os_family }} vars"
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "user_n_group.yml"
+  tags:
+    - security
+
+- include: "set_resolver.yml"
+  when: common_update_hosts
+  tags:
+    - dns
+
+- include: "repos.yml"
+  when: common_packages_install
+
+- include: "prereqs.yml"
+  when: common_packages_install

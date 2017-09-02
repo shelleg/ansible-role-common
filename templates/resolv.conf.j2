@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+{% if common_domain_name is defined %}
+domain {{ common_domain_name }}
+{% else %}
+domain example.local
+{% endif %}
+{% if common_dns_searches is defined %}
+search {% for s in common_dns_searches %} {{ s }}{% endfor %}
+{% endif %}
+
+{% for dns_server in common_dns_servers %}
+nameserver {{ dns_server }}
+{% endfor %}

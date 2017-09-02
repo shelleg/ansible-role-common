@@ -1,0 +1,17 @@
+---
+- name: "Set dns & search domain in /etc/resolv.conf"
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+
+# Add common-services to /etc/hosts - temporary solution
+# (which might become the norme if we do no implement DNS !!!) !
+- name: "Ensure /etc/hosts contains 'common_rpm_repos'"
+  lineinfile:
+    name: /etc/hosts
+    line: "{{ item.ip }} {{ item.dns_name }}"
+    regexp: "^{{ item.ip }} {{ item.dns_name }}$"
+    state: "{{ item.hosts_state }}"
+    backup: yes
+  register: hosts_changed
+  with_items: "{{ common_rpm_repos }}"

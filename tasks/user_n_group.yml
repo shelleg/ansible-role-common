@@ -1,0 +1,66 @@
+---
+- name: "Add common group"
+  group:
+    name: "{{ common_group }}"
+
+- name: "Add common user"
+  user:
+    name: "{{ common_user }}"
+    group: "{{ common_group }}"
+    home: "{{ common_home_dir }}"
+
+- name: "Configure {{ common_user }} as sudoer"
+  template:
+    src: sudoer.j2
+    dest: "/etc/sudoers.d/{{ common_user }}"
+    mode: 0644
+    owner: root
+    group: root
+  when: common_sudoer
+
+- name: "incliude /etc/sudoers.d/*"
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '#includedir /etc/sudoers.d'
+    insertafter: '#includedir /etc/sudoers.d'
+    line: '#includedir /etc/sudoers.d'
+  when: common_sudoer
+
+- file:
+    path: "{{ common_home_dir }}/.ssh/"
+    state: directory
+    owner: "{{ common_user }}"
+    group: "{{ common_group }}"
+    mode: 0700
+
+- file:
+    path: "{{ common_home_dir }}/.ssh/authorized_keys"
+    state: touch
+    mode: 0600
+    owner: "{{ common_user }}"
+    group: "{{ common_group }}"
+
+- name: "Set up authorized_keys for common user(s)"
+  authorized_key:
+    user: "{{ common_user }}"
+    key: "{{ item }}"
+  with_items:
+    - "{{ common_pubkey }}"
+  when: common_sudoer
+
+- name: "Set up authorized_keys for common user(s)"
+  authorized_key:
+    user: root
+    key: "{{ item }}"
+  with_items:
+    - "{{ common_pubkey }}"
+  when: common_pubkey_root
+
+- name: "Allow {{ common_user }} user to remotly connect with local user"
+  lineinfile:
+    path: /etc/security/access.conf
+    regexp: '^\+ \: ratchet \: ALL'
+    # regexp: '^\+ \: root \: ALL'
+    insertafter: '^\+ \: root \: ALL'
+    line: '+ : {{ common_user }} : ALL'
+  when: common_corporate_strict_access

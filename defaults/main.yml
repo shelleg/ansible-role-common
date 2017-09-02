@@ -1,0 +1,24 @@
+---
+# defaults file for common
+
+## Feature togglers ...
+common_packages_install: false
+common_update_hosts: false
+common_sudoer: false
+common_pubkey_root: false
+common_corporate_strict_access: false
+
+## Feature togglers end here...
+
+# common_rpm_repos:
+# common_dns_servers: ''
+
+# common_packages: see ./vars dir
+
+common_python_modules:
+  - docker-py
+
+common_user: foo
+common_group: bar
+common_home_dir: "/home/{{ common_user }}"
+common_pubkey: ''

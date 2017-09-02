@@ -1,0 +1,9 @@
+---
+common_packages:
+  - vim
+  - sysstat
+  - net-tools
+  - lsof
+  - telnet
+  - python-pip
+  - bash-completion

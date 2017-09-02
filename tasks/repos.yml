@@ -1,0 +1,15 @@
+---
+- debug:
+    var: common_rpm_repos
+    verbosity: 2
+
+- name: "Setup common rpm repos"
+  yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    file: "{{ item.file }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgcheck: "{{ item.gpgcheck }}"
+  with_items:
+    - "{{ common_rpm_repos }}"
+  when: common_rpm_repos is defined
